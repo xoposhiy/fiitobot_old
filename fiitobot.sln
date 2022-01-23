@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tg-bot", "tg-bot\tg-bot.csproj", "{91405CCE-7AA7-4C0D-B80A-7ABFF941510B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "tests\tests.csproj", "{60B86E98-25E5-4FFA-BE64-9BC81C124E84}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91405CCE-7AA7-4C0D-B80A-7ABFF941510B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91405CCE-7AA7-4C0D-B80A-7ABFF941510B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91405CCE-7AA7-4C0D-B80A-7ABFF941510B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91405CCE-7AA7-4C0D-B80A-7ABFF941510B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60B86E98-25E5-4FFA-BE64-9BC81C124E84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60B86E98-25E5-4FFA-BE64-9BC81C124E84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60B86E98-25E5-4FFA-BE64-9BC81C124E84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60B86E98-25E5-4FFA-BE64-9BC81C124E84}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,12 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=15263e20_002Dfa07_002D4f67_002D9bf0_002D0a119f07e282/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test1" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.ContactsRepositoryTests.GetContacts&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.DialogTests.PlainText_WithLastName_SearchesStudent&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.DialogTests.PlainText_WithFirstName_SearchesStudents&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.DialogTests.PlainText_WithFirstTgName_SearchesStudents&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.DialogTests.PlainTextMessage_SearchesStudent_IgnoringSomeParts("Мизурова Шмизурова")&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.DialogTests.PlainTextMessage_SearchesStudent_IgnoringSomeParts&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.DialogTests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
