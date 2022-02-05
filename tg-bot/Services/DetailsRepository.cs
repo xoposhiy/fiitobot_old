@@ -40,37 +40,47 @@ public class DetailsRepository
         var result = new List<Detail>();
         foreach (var (name, url, values) in data)
         {
-            if (values.Count <= 1) continue;
-            var headerRowsCount = 1;
-            var headers = values[0];
-            if (string.IsNullOrWhiteSpace(headers[0]))
+            try
             {
-                headerRowsCount++;
-                var h0 = headers;
-                headers = values[1];
-                for (int i = 0; i < h0.Count; i++)
+                if (values.Count <= 1) continue;
+                var headerRowsCount = 1;
+                var headers = values[0];
+                if (string.IsNullOrWhiteSpace(headers[0]))
                 {
-                    if (string.IsNullOrWhiteSpace(headers[i]))
-                        headers[i] = h0[i];
-                }
-            }
-            foreach (var row in values.Skip(headerRowsCount))
-            {
-                if (RowContains(row, contact))
-                {
-                    for (int i = 0; i < row.Count; i++)
+                    headerRowsCount++;
+                    var h0 = headers;
+                    headers = values[1];
+                    for (int i = 0; i < h0.Count; i++)
                     {
-                        var value = row[i];
-                        if (string.IsNullOrWhiteSpace(value)) continue;
-                        if (string.IsNullOrWhiteSpace(headers[i])) continue;
-                        var ignoredValues = GetContactValuesToIgnore(contact);
-                        if (ignoredValues.Any(ignoredValue => value.StartsWith(ignoredValue, StringComparison.OrdinalIgnoreCase))) continue;
-                        if (result.Any(res => res.Parameter.Equals(headers[i], StringComparison.OrdinalIgnoreCase))) continue;
-                        var detail = new Detail(name, headers[i], value, url);
-                        result.Add(detail);
-                        Console.WriteLine(detail);
+                        if (i < headers.Count && string.IsNullOrWhiteSpace(headers[i]))
+                            headers[i] = h0[i];
                     }
                 }
+
+                foreach (var row in values.Skip(headerRowsCount))
+                {
+                    if (RowContains(row, contact))
+                    {
+                        for (int i = 0; i < row.Count; i++)
+                        {
+                            var value = row[i];
+                            if (string.IsNullOrWhiteSpace(value)) continue;
+                            if (i >= headers.Count || string.IsNullOrWhiteSpace(headers[i])) continue;
+                            var ignoredValues = GetContactValuesToIgnore(contact);
+                            if (ignoredValues.Any(ignoredValue =>
+                                    value.StartsWith(ignoredValue, StringComparison.OrdinalIgnoreCase))) continue;
+                            if (result.Any(res => res.Parameter.Equals(headers[i], StringComparison.OrdinalIgnoreCase)))
+                                continue;
+                            var detail = new Detail(name, headers[i].Replace("\n", " ").Replace("\r", " "), value, url);
+                            result.Add(detail);
+                            Console.WriteLine(detail);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"spreadsheet {name} at {url} error", e);
             }
         }
         return result.ToArray();
