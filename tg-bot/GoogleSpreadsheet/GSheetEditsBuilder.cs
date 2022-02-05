@@ -1,13 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Google.Apis.Auth.OAuth2;
 using Google.Apis.Http;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+
 #nullable enable
 
-namespace lib.db
+namespace fiitobot.GoogleSpreadsheet
 {
     public class GSheetEditsBuilder
     {

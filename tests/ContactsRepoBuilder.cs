@@ -1,6 +1,5 @@
 using fiitobot.GoogleSpreadsheet;
 using fiitobot.Services;
-using lib.db;
 using Microsoft.Extensions.Configuration;
 
 namespace tests;

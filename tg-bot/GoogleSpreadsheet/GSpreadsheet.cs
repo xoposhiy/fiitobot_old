@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using fiitobot.GoogleSpreadsheet;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 
@@ -10,9 +7,17 @@ namespace fiitobot.GoogleSpreadsheet
     {
         public List<GSheet> GetSheets()
         {
-            var metadata = SheetsService.Spreadsheets.Get(SpreadsheetId).Execute();
-            var sheets = metadata.Sheets.Select(x => new GSheet(SpreadsheetId, x.Properties.Title, x.Properties.SheetId ?? 0, SheetsService));
-            return sheets.ToList();
+            try
+            {
+                var metadata = SheetsService.Spreadsheets.Get(SpreadsheetId).Execute();
+                var sheets = metadata.Sheets.Select(x =>
+                    new GSheet(SpreadsheetId, x.Properties.Title, x.Properties.SheetId ?? 0, SheetsService));
+                return sheets.ToList();
+            }
+            catch (Exception e)
+            {
+                throw new Exception($"Can't get sheets of {SpreadsheetId}", e);
+            }
         }
 
         public GSheet GetSheetById(int sheetId)

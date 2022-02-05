@@ -41,7 +41,7 @@ public class HandleUpdateService
         }
         catch (Exception exception)
         {
-            await HandleErrorAsync(exception);
+            await HandleErrorAsync(update, exception);
         }
     }
 
@@ -55,7 +55,7 @@ public class HandleUpdateService
 
     private async Task BotOnMessageReceived(Message message)
     {
-        logger.LogInformation("Receive message type {messageType}: {text} from {message.From}", message.Type, message.Text, message.From);
+        logger.LogInformation("Receive message type {messageType}: {text} from {message.From} charId {message.Chat.Id}", message.Type, message.Text, message.From, message.Chat.Id);
         if (!await EnsureHasRights(message.From, message.Chat.Id)) return;
         if (message.Type == MessageType.Text)
             await HandlePlainText(message.Text!, message.Chat.Id);
@@ -112,7 +112,7 @@ public class HandleUpdateService
         return Task.CompletedTask;
     }
 
-    public Task HandleErrorAsync(Exception exception)
+    public async Task HandleErrorAsync(Update incomingUpdate, Exception exception)
     {
         var errorMessage = exception switch
         {
@@ -121,6 +121,7 @@ public class HandleUpdateService
         };
 
         logger.LogInformation("HandleError: {ErrorMessage}", errorMessage);
-        return Task.CompletedTask;
+        await presenter.ShowErrorToDevops(incomingUpdate, errorMessage);
+        logger.LogInformation("Send error to devops");
     }
 }

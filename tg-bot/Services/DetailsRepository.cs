@@ -2,13 +2,15 @@ using fiitobot.GoogleSpreadsheet;
 
 namespace fiitobot.Services;
 
+public record SheetData(string SheetName, string SheetUrl, List<List<string>> Values);
+
 public class DetailsRepository
 {
     private readonly GSheetClient sheetClient;
     private readonly ContactsRepository contactsRepo;
     private readonly object locker = new();
     private DateTime lastUpdateTime = DateTime.MinValue;
-    private List<(string name, string url, List<List<string>> data)> data = new();
+    private volatile List<SheetData> data = new();
 
     public DetailsRepository(GSheetClient sheetClient, ContactsRepository contactsRepo)
     {
@@ -22,16 +24,15 @@ public class DetailsRepository
         {
             if (DateTime.Now - lastUpdateTime <= TimeSpan.FromHours(24) && !force) return;
             var otherSpreadsheets = contactsRepo.GetOtherSpreadsheets();
-            foreach (var spreadsheet in otherSpreadsheets)
-            {
-                var sheet = sheetClient.GetSheetByUrl(spreadsheet);
-                var name = sheet.SheetName;
-                var values = sheet.ReadRange("A1:ZZ"); 
-                data.Add((name, spreadsheet, values));
-            }
+            var newData = 
+                from spreadsheet in otherSpreadsheets 
+                let sheet = sheetClient.GetSheetByUrl(spreadsheet) 
+                let name = sheet.SheetName 
+                let values = sheet.ReadRange("A1:ZZ") 
+                select new SheetData(name, spreadsheet, values);
+            data = newData.ToList();
             lastUpdateTime = DateTime.Now;
         }
-        
     }
     
     public Detail[] GetPersonDetails(Contact contact)
@@ -67,13 +68,12 @@ public class DetailsRepository
                             if (string.IsNullOrWhiteSpace(value)) continue;
                             if (i >= headers.Count || string.IsNullOrWhiteSpace(headers[i])) continue;
                             var ignoredValues = GetContactValuesToIgnore(contact);
-                            if (ignoredValues.Any(ignoredValue =>
+                            if (ignoredValues.Any(ignoredValue => 
                                     value.StartsWith(ignoredValue, StringComparison.OrdinalIgnoreCase))) continue;
                             if (result.Any(res => res.Parameter.Equals(headers[i], StringComparison.OrdinalIgnoreCase)))
                                 continue;
                             var detail = new Detail(name, headers[i].Replace("\n", " ").Replace("\r", " "), value, url);
                             result.Add(detail);
-                            Console.WriteLine(detail);
                         }
                     }
                 }

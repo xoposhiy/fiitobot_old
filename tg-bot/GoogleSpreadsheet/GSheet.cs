@@ -1,6 +1,5 @@
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
-using lib.db;
 
 namespace fiitobot.GoogleSpreadsheet
 {

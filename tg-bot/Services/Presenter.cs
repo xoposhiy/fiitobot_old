@@ -1,5 +1,6 @@
 using System.Text;
 using Telegram.Bot;
+using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
 
@@ -14,15 +15,18 @@ public interface IPresenter
     Task InlineSearchResults(string inlineQueryId, Contact[] foundContacts);
     Task ShowDetails(Detail[] contactDetails, long fromChatId);
     Task SayReloaded(long chatId);
+    Task ShowErrorToDevops(Update incomingUpdate, string errorMessage);
 }
 
 public class Presenter : IPresenter
 {
     private readonly ITelegramBotClient botClient;
+    private readonly long devopsChatId;
 
-    public Presenter(ITelegramBotClient botClient)
+    public Presenter(ITelegramBotClient botClient, IConfiguration config)
     {
         this.botClient = botClient;
+        devopsChatId = config.GetValue<long>("DevopsChatId");
     }
 
     public async Task InlineSearchResults(string inlineQueryId, Contact[] foundContacts)
@@ -41,9 +45,9 @@ public class Presenter : IPresenter
         var text = new StringBuilder();
         foreach (var rubric in contactDetails.GroupBy(d => d.Rubric))
         {
-            text.AppendLine($"<b>{rubric.Key}</b> (<a href=\"{rubric.First().SourceUrl}\">источник</a>)");
+            text.AppendLine($"<b>{EscapeForHtml(rubric.Key)}</b> (<a href=\"{rubric.First().SourceUrl}\">источник</a>)");
             foreach (var detail in rubric)
-                text.AppendLine($" • {detail.Parameter}: {detail.Value}");
+                text.AppendLine($" • {EscapeForHtml(detail.Parameter)}: {EscapeForHtml(detail.Value)}");
         }
         await botClient.SendTextMessageAsync(chatId, text.ToString(), ParseMode.Html);
     }
@@ -51,6 +55,32 @@ public class Presenter : IPresenter
     public async Task SayReloaded(long chatId)
     {
         await botClient.SendTextMessageAsync(chatId, "Перезагрузил!", ParseMode.Html);
+    }
+
+    public async Task ShowErrorToDevops(Update incomingUpdate, string errorMessage)
+    {
+        await botClient.SendTextMessageAsync(devopsChatId, FormatErrorHtml(incomingUpdate, errorMessage), ParseMode.Html);
+    }
+
+    private string FormatErrorHtml(Update incomingUpdate, string errorMessage)
+    {
+        var incoming = incomingUpdate.Type switch
+        {
+            UpdateType.Message => $"From: {incomingUpdate.Message!.From} Message: {incomingUpdate.Message!.Text}",
+            UpdateType.EditedMessage => $"From: {incomingUpdate.EditedMessage!.From} Message: {incomingUpdate.EditedMessage!.Text}",
+            UpdateType.InlineQuery => $"From: {incomingUpdate.InlineQuery!.From} Query: {incomingUpdate.InlineQuery!.Query}",
+            _ => $"Message with type {incomingUpdate.Type}"
+        };
+
+        return $"Error handling message: <pre>{EscapeForHtml(incoming)}</pre>\n\nError:\n<pre>{EscapeForHtml(errorMessage)}</pre>";
+    }
+
+    private string EscapeForHtml(string text)
+    {
+        return text
+            .Replace("&", "&amp;")
+            .Replace("<", "&lt;")
+            .Replace(">", "&gt;");
     }
 
     public async Task ShowContact(Contact contact, long chatId)
@@ -84,15 +114,7 @@ public class Presenter : IPresenter
 📧 {contact.Email}
 📞 {contact.Phone}
 💬 {contact.Telegram}
-{contact.Note}";
-    }
-
-    private string FormatGroup(int groupIndex, int subgroupIndex, int admissionYear)
-    {
-        var now = DateTime.Now;
-        var delta = now.Month >= 8 ? 0 : 1;
-        var course = now.Year - admissionYear + 1 - delta;
-        return $"ФТ-{course}0{groupIndex}-{subgroupIndex}";
+{EscapeForHtml(contact.Note)}";
     }
 
     private string FormatConcurs(string concurs)
