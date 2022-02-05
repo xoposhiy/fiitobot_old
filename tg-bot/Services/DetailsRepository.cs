@@ -20,7 +20,7 @@ public class DetailsRepository
     {
         lock (locker)
         {
-            if (DateTime.Now - lastUpdateTime <= TimeSpan.FromMinutes(1) && !force) return;
+            if (DateTime.Now - lastUpdateTime <= TimeSpan.FromHours(24) && !force) return;
             var otherSpreadsheets = contactsRepo.GetOtherSpreadsheets();
             foreach (var spreadsheet in otherSpreadsheets)
             {
