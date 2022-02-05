@@ -8,5 +8,8 @@
     &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.DialogTests.PlainTextMessage_SearchesStudent_IgnoringSomeParts("Мизурова Шмизурова")&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.DialogTests.PlainTextMessage_SearchesStudent_IgnoringSomeParts&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.DialogTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.PluralizeTests.Pluralize&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.PluralizeTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::60B86E98-25E5-4FFA-BE64-9BC81C124E84::net6.0::tests.GSheetTests.GetByUrl&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

@@ -4,7 +4,7 @@ using fiitobot.GoogleSpreadsheet;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 
-namespace lib.db
+namespace fiitobot.GoogleSpreadsheet
 {
     public record GSpreadsheet(string SpreadsheetId, SheetsService SheetsService)
     {

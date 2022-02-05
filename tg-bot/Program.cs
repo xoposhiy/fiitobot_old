@@ -1,6 +1,6 @@
 using fiitobot;
+using fiitobot.GoogleSpreadsheet;
 using fiitobot.Services;
-using lib.db;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Telegram.Bot;
@@ -20,6 +20,7 @@ services.AddHttpClient("tgwebhook")
 services.AddScoped<HandleUpdateService>();
 services.AddSingleton<IPresenter, Presenter>();
 services.AddSingleton<ContactsRepository>();
+services.AddSingleton<DetailsRepository>();
 services.AddSingleton<GSheetClient>();
 var app = builder.Build();
 var token = app.Configuration.GetValue<string>("BotToken");

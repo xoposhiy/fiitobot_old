@@ -1,3 +1,4 @@
+using System;
 using FakeItEasy;
 using fiitobot;
 using fiitobot.Services;
@@ -9,11 +10,13 @@ namespace tests;
 public class DialogTests
 {
     private ContactsRepository? contactsRepo;
+    private DetailsRepository? detailsRepo;
 
     [OneTimeSetUp]
     public void OneTimeSetup()
     {
         contactsRepo = new ContactsRepoBuilder().Build();
+        detailsRepo = new DetailsRepository(new GSheetClientBuilder().Build(), contactsRepo);
     }
     
     [TestCase("Мизурова")]
@@ -46,6 +49,11 @@ public class DialogTests
                 A<Contact>.That.Matches(c => c.LastName == "Мизурова"), 
                 123))
             .MustHaveHappenedOnceExactly();
+        A.CallTo(() => contactsPresenter.ShowDetails(
+                Array.Empty<Detail>(), 
+                123))
+            .WithAnyArguments()
+            .MustHaveHappenedOnceExactly();
     }
     
     [TestCase("Иван")]
@@ -64,6 +72,6 @@ public class DialogTests
     
     private HandleUpdateService PrepareUpdateService(IPresenter presenter)
     {
-        return new HandleUpdateService(NullLogger<HandleUpdateService>.Instance, contactsRepo!, presenter);
+        return new HandleUpdateService(NullLogger<HandleUpdateService>.Instance, contactsRepo!, detailsRepo!, presenter);
     }
 }

@@ -8,12 +8,14 @@ public class HandleUpdateService
 {
     private readonly ILogger<HandleUpdateService> logger;
     private readonly ContactsRepository contactsRepository;
+    private readonly DetailsRepository detailsRepository;
     private readonly IPresenter presenter;
 
-    public HandleUpdateService(ILogger<HandleUpdateService> logger, ContactsRepository contactsRepository, IPresenter presenter)
+    public HandleUpdateService(ILogger<HandleUpdateService> logger, ContactsRepository contactsRepository, DetailsRepository detailsRepository, IPresenter presenter)
     {
         this.logger = logger;
         this.contactsRepository = contactsRepository;
+        this.detailsRepository = detailsRepository;
         this.presenter = presenter;
     }
 
@@ -69,7 +71,7 @@ public class HandleUpdateService
     public async Task HandlePlainText(string text, long fromChatId)
     {
         var contacts = SearchContacts(text);
-        const int maxResultsCount = 5;
+        const int maxResultsCount = 3;
         foreach (var contact in contacts.Take(maxResultsCount))
         {
             await presenter.ShowContact(contact, fromChatId);
@@ -78,6 +80,12 @@ public class HandleUpdateService
             await presenter.SayHasMoreResults(contacts.Length-maxResultsCount, fromChatId);
         if (contacts.Length == 0)
             await presenter.SayNoResults(fromChatId);
+        if (contacts.Length == 1)
+        {
+            var contact = contacts[0];
+            var details = detailsRepository.GetPersonDetails(contact);
+            await presenter.ShowDetails(details, fromChatId);
+        }
     }
 
     private Contact[] SearchContacts(string text)

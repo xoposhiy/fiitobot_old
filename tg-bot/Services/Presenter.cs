@@ -1,3 +1,4 @@
+using System.Text;
 using Telegram.Bot;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InlineQueryResults;
@@ -11,7 +12,7 @@ public interface IPresenter
     Task SayNoResults(long chatId);
     Task SayNoRights(long chatId);
     Task InlineSearchResults(string inlineQueryId, Contact[] foundContacts);
-
+    Task ShowDetails(Detail[] contactDetails, long fromChatId);
 }
 
 public class Presenter : IPresenter
@@ -34,6 +35,18 @@ public class Presenter : IPresenter
         await botClient.AnswerInlineQueryAsync(inlineQueryId, results, 60);
     }
 
+    public async Task ShowDetails(Detail[] contactDetails, long chatId)
+    {
+        var text = new StringBuilder();
+        foreach (var rubric in contactDetails.GroupBy(d => d.Rubric))
+        {
+            text.AppendLine($"<b>{rubric.Key}</b> (<a href=\"{rubric.First().SourceUrl}\">источник</a>)");
+            foreach (var detail in rubric)
+                text.AppendLine($" • {detail.Parameter}: {detail.Value}");
+        }
+        await botClient.SendTextMessageAsync(chatId, text.ToString(), ParseMode.Html);
+    }
+
     public async Task ShowContact(Contact contact, long chatId)
     {
         await botClient.SendTextMessageAsync(chatId, FormatContactAsHtml(contact), ParseMode.Html);
@@ -41,7 +54,7 @@ public class Presenter : IPresenter
 
     public async Task SayHasMoreResults(int moreResultsCount, long chatId)
     {
-        await botClient.SendTextMessageAsync(chatId, $"Есть ещё {moreResultsCount} подходящих людей", ParseMode.Html);
+        await botClient.SendTextMessageAsync(chatId, $"Есть ещё {moreResultsCount.Pluralize("подходящий человек", "подходящих человека", "подходящих человек")}", ParseMode.Html);
     }
 
     public async Task SayNoResults(long chatId)
@@ -57,7 +70,7 @@ public class Presenter : IPresenter
     public string FormatContactAsHtml(Contact contact)
     {
         return $@"<b>{contact.LastName} {contact.FirstName} {contact.Patronymic}</b>
-{FormatGroup(contact.GroupIndex, contact.SubgroupIndex, contact.AdmissionYear)} (год поступления: {contact.AdmissionYear})
+{contact.FormatMnemonicGroup(DateTime.Now)} (год поступления: {contact.AdmissionYear})
 🏫 Школа: {contact.School}
 🏙️ Город: {contact.City}
 Поступление {FormatConcurs(contact.Concurs)} c рейтингом {contact.Rating}

@@ -1,4 +1,4 @@
-using lib.db;
+using fiitobot.GoogleSpreadsheet;
 
 namespace fiitobot.Services;
 
@@ -7,6 +7,7 @@ public class ContactsRepository
     private readonly GSheetClient sheetClient;
     private volatile Contact[]? contacts;
     private volatile string[]? admins;
+    private volatile string[]? otherSpreadsheets;
     private DateTime lastUpdateTime = DateTime.MinValue;
     private readonly object locker = new();
     private readonly string spreadsheetId;
@@ -14,7 +15,7 @@ public class ContactsRepository
     public ContactsRepository(GSheetClient sheetClient, IConfiguration configuration)
     {
         this.sheetClient = sheetClient;
-        this.spreadsheetId = configuration.GetValue<string>("ContactsSpreadsheetId");
+        spreadsheetId = configuration.GetValue<string>("ContactsSpreadsheetId");
     }
 
     public Contact[] FindContacts(string query)
@@ -25,15 +26,27 @@ public class ContactsRepository
 
     private void ReloadIfNeeded()
     {
-        if (DateTime.Now - lastUpdateTime > TimeSpan.FromMinutes(1))
+        lock (locker)
         {
-            lock (locker)
-            {
-                contacts = LoadContacts();
-                admins = LoadAdmins();
-                lastUpdateTime = DateTime.Now;
-            }
+            if (DateTime.Now - lastUpdateTime <= TimeSpan.FromMinutes(1)) return;
+            contacts = LoadContacts();
+            admins = LoadAdmins();
+            otherSpreadsheets = LoadOtherSpreadsheets();
+            lastUpdateTime = DateTime.Now;
         }
+    }
+
+    public Contact[] GetAllContacts()
+    {
+        ReloadIfNeeded();
+        return contacts!;
+    }
+
+    private string[] LoadOtherSpreadsheets()
+    {
+        var spreadsheet = sheetClient.GetSpreadsheet(spreadsheetId);
+        var adminsSheet = spreadsheet.GetSheetByName("Details");
+        return adminsSheet.ReadRange("A1:A").Select(row => row[0]).ToArray();
     }
 
     private bool SameContact(Contact contact, string query)
@@ -48,9 +61,7 @@ public class ContactsRepository
     {
         var spreadsheet = sheetClient.GetSpreadsheet(spreadsheetId);
         var adminsSheet = spreadsheet.GetSheetByName("Admins");
-        var admins = adminsSheet.ReadRange("A1:A").Select(row => row[0]).ToArray();
-        return admins;
-
+        return adminsSheet.ReadRange("A1:A").Select(row => row[0]).ToArray();
     }
     
     public Contact[] LoadContacts()
@@ -99,5 +110,10 @@ public class ContactsRepository
     {
         ReloadIfNeeded();
         return admins!.Any(a => a.Trim('@').Equals(username, StringComparison.OrdinalIgnoreCase));
+    }
+
+    public string[] GetOtherSpreadsheets()
+    {
+        return otherSpreadsheets!;
     }
 }
