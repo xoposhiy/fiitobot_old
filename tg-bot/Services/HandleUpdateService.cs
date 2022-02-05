@@ -70,6 +70,13 @@ public class HandleUpdateService
 
     public async Task HandlePlainText(string text, long fromChatId)
     {
+        if (text == "/reload")
+        {
+            contactsRepository.ForceReload();
+            detailsRepository.ForceReload();
+            await presenter.SayReloaded(fromChatId);
+            return;
+        }
         var contacts = SearchContacts(text);
         const int maxResultsCount = 3;
         foreach (var contact in contacts.Take(maxResultsCount))

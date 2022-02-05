@@ -24,11 +24,11 @@ public class ContactsRepository
         return contacts!.Where(c => SameContact(c, query)).ToArray();
     }
 
-    private void ReloadIfNeeded()
+    private void ReloadIfNeeded(bool force = false)
     {
         lock (locker)
         {
-            if (DateTime.Now - lastUpdateTime <= TimeSpan.FromMinutes(1)) return;
+            if (DateTime.Now - lastUpdateTime <= TimeSpan.FromMinutes(1) && !force) return;
             contacts = LoadContacts();
             admins = LoadAdmins();
             otherSpreadsheets = LoadOtherSpreadsheets();
@@ -115,5 +115,10 @@ public class ContactsRepository
     public string[] GetOtherSpreadsheets()
     {
         return otherSpreadsheets!;
+    }
+
+    public void ForceReload()
+    {
+        ReloadIfNeeded(true);
     }
 }

@@ -16,11 +16,11 @@ public class DetailsRepository
         this.contactsRepo = contactsRepo;
     }
 
-    public void ReloadIfNeeded()
+    public void ReloadIfNeeded(bool force = false)
     {
         lock (locker)
         {
-            if (DateTime.Now - lastUpdateTime <= TimeSpan.FromMinutes(1)) return;
+            if (DateTime.Now - lastUpdateTime <= TimeSpan.FromMinutes(1) && !force) return;
             var otherSpreadsheets = contactsRepo.GetOtherSpreadsheets();
             foreach (var spreadsheet in otherSpreadsheets)
             {
@@ -109,6 +109,11 @@ public class DetailsRepository
         if (Math.Abs(firstNameIndex - lastNameIndex) == 1)
             return true;
         return false;
+    }
+    
+    public void ForceReload()
+    {
+        ReloadIfNeeded(true);
     }
 }
 

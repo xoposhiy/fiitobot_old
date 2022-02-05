@@ -13,6 +13,7 @@ public interface IPresenter
     Task SayNoRights(long chatId);
     Task InlineSearchResults(string inlineQueryId, Contact[] foundContacts);
     Task ShowDetails(Detail[] contactDetails, long fromChatId);
+    Task SayReloaded(long chatId);
 }
 
 public class Presenter : IPresenter
@@ -45,6 +46,11 @@ public class Presenter : IPresenter
                 text.AppendLine($" • {detail.Parameter}: {detail.Value}");
         }
         await botClient.SendTextMessageAsync(chatId, text.ToString(), ParseMode.Html);
+    }
+
+    public async Task SayReloaded(long chatId)
+    {
+        await botClient.SendTextMessageAsync(chatId, "Перезагрузил!", ParseMode.Html);
     }
 
     public async Task ShowContact(Contact contact, long chatId)
